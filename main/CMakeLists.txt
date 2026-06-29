@@ -1,9 +1,14 @@
 idf_component_register(
-    SRCS
+        SRCS
         "main_mobo.c"
         "console.c"
         "sd_card.c"
         "CANbus.c"
-    INCLUDE_DIRS
+        INCLUDE_DIRS
         "."
+        REQUIRES
+        driver
+        esp_timer
+        fatfs
+        sdmmc
 )
