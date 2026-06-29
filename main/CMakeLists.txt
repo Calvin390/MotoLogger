@@ -1,1 +1,9 @@
-
+idf_component_register(
+    SRCS
+        "main_mobo.c"
+        "console.c"
+        "sd_card.c"
+        "CANbus.c"
+    INCLUDE_DIRS
+        "."
+)
