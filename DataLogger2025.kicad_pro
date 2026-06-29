@@ -39,9 +39,9 @@
         "other_text_thickness": 0.05,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.2,
-          "height": 0.4,
-          "width": 0.4
+          "drill": 1.02,
+          "height": 2.02,
+          "width": 1.5
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -158,8 +158,8 @@
         "min_silk_clearance": 0.0,
         "min_text_height": 0.8,
         "min_text_thickness": 0.08,
-        "min_through_hole_diameter": 0.3,
-        "min_track_width": 0.0,
+        "min_through_hole_diameter": 0.2,
+        "min_track_width": 0.2,
         "min_via_annular_width": 0.1,
         "min_via_diameter": 0.5,
         "solder_mask_to_copper_clearance": 0.0,
@@ -543,7 +543,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "C:/Users/calbu/Downloads/",
+      "plot": "./",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
@@ -812,7 +812,7 @@
         "uuid": "e977575a-1ba5-4021-b7ba-3ddd11b64cdf"
       }
     ],
-    "used_designators": "D1-2,#PWR5,#PWR46,NT1,U1,U5",
+    "used_designators": "D1-2,#PWR5,#PWR46-49,NT1,U1,U5,C23,TP1-9",
     "variants": []
   },
   "sheets": [
