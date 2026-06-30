@@ -6,11 +6,12 @@
 #define MOTO_MOBO_H
 
 #define MOUNT_POINT "/sdcard"
+#include "driver/gpio.h"
 
 // GPIO pins
 #define PIN_NUM_MISO  GPIO_NUM_13
 #define PIN_NUM_MOSI  GPIO_NUM_11
-#define PIN_NUM_CLK   GPIO_NUM12
+#define PIN_NUM_CLK   GPIO_NUM_12
 #define PIN_NUM_CS    GPIO_NUM_10
 
 #define CAN_TX_GPIO   GPIO_NUM_21
