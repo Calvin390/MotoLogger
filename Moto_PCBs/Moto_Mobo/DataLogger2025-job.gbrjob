@@ -5,7 +5,7 @@
       "Application": "Pcbnew",
       "Version": "10.0.4"
     },
-    "CreationDate": "2026-06-30T13:37:44-05:00"
+    "CreationDate": "2026-07-17T08:05:41-05:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
@@ -34,54 +34,59 @@
   ],
   "FilesAttributes": [
     {
-      "Path": "DataLogger2025-F_Cu.gbr",
+      "Path": "DataLogger2025-F_Cu.gtl",
       "FileFunction": "Copper,L1,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-B_Cu.gbr",
+      "Path": "DataLogger2025-B_Cu.gbl",
       "FileFunction": "Copper,L2,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-F_Adhesive.gbr",
+      "Path": "DataLogger2025-F_Adhesive.gta",
       "FileFunction": "Glue,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-B_Adhesive.gbr",
+      "Path": "DataLogger2025-B_Adhesive.gba",
       "FileFunction": "Glue,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-F_Paste.gbr",
+      "Path": "DataLogger2025-F_Paste.gtp",
       "FileFunction": "SolderPaste,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-B_Paste.gbr",
+      "Path": "DataLogger2025-B_Paste.gbp",
       "FileFunction": "SolderPaste,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-F_Silkscreen.gbr",
+      "Path": "DataLogger2025-F_Silkscreen.gto",
       "FileFunction": "Legend,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-B_Silkscreen.gbr",
+      "Path": "DataLogger2025-B_Silkscreen.gbo",
       "FileFunction": "Legend,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "DataLogger2025-F_Mask.gbr",
+      "Path": "DataLogger2025-F_Mask.gts",
       "FileFunction": "SolderMask,Top",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "DataLogger2025-B_Mask.gbr",
+      "Path": "DataLogger2025-B_Mask.gbs",
       "FileFunction": "SolderMask,Bot",
       "FilePolarity": "Negative"
+    },
+    {
+      "Path": "DataLogger2025-Edge_Cuts.gm1",
+      "FileFunction": "Profile",
+      "FilePolarity": "Positive"
     }
   ],
   "MaterialStackup": [
