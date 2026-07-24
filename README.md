@@ -36,6 +36,8 @@ Current focus:
 - Bringing up power stage: Noisy 12V automotive input → 5V → 3.3V regulation, with fuse/TVS/Schottky protection
 - Validating CAN transceiver integration and SPI microSD logging against assembled hardware
 - Bench validation prior to future daughterboard module expansion
+
+Hardware is in its first prototype revision and may change in future spins based on bring-up results.
 ---
 
 ## System Overview
@@ -43,26 +45,28 @@ Current focus:
 The Motologger system is split into a main controller board and external sensor modules.
 
 ```text
-       +--------------------+
-       |    GPS Module       |
-       |   u-blox M10        |
-       +----------+---------+
-                  |
-                  | CAN
-                  |
-+-----------------v-----------------+
+        +--------------------+
+        |    GPS Module      |
+        |   u-blox M10       |
+        +----------+---------+
+                   |
+                   | CAN
+                   |
+ +-----------------v-----------------+
 |          Motologger Mainboard      |
 |                                    |
-|  ESP32-S3                          |
+| ESP32-S3-WROOM                     |
+|  Power Stage (fuse/TVS/Schottky,   |
+|    12V→5V→3.3V regulation)         |
 |  microSD Card                      |
 |  CAN Transceiver                   |
 |  USB-C Debug/Programming           |
 |  12V Motorcycle Power Input        |
-+-----------------^-----------------+
-                  |
-                  | CAN
-                  |
-       +----------+---------+
-       |     IMU Module      |
-       |   ICM-20948         |
-       +--------------------+
+ +-----------------^-----------------+
+                   |
+                   | CAN
+                   |
+        +----------+---------+
+        |     IMU Module     |
+        |   ICM-20948        |
+        +--------------------+
