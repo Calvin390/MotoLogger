@@ -12,16 +12,99 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "freertos/portmacro.h"
 
 #include "config.h"
 #include "CANbus.h"
 
-static const char *TAG = "CAN_BUS";
+#include "CAN__Protocol.h"
+
+static const char *TAG = "CANBUS";
 
 static bool can_driver_started = false;
 
+static int16_t get_i16_le(const uint8_t *data);
+static void process_imu_accel_frame(const twai_message_t *message);
+static void can_rx_task(void *arg);
+static void can_console_summary_task(void *arg);
 static TaskHandle_t can_rx_task_handle = NULL;
 static QueueHandle_t can_log_queue = NULL;
+static TaskHandle_t can_summary_task_handle = NULL;
+
+typedef struct {
+    int64_t ax_sum_mg;
+    int64_t ay_sum_mg;
+    int64_t az_sum_mg;
+    uint32_t sample_count;
+
+    uint8_t latest_status_flags;
+    uint8_t latest_sample_counter;
+} imu_accel_accumulator_t;
+
+static imu_accel_accumulator_t imu_accel_accumulator = {0};
+
+static portMUX_TYPE accumulator_mux = portMUX_INITIALIZER_UNLOCKED;
+
+static int16_t get_i16_le(const uint8_t *data) {
+    uint16_t value = ((uint16_t)data[0]) | (((uint16_t)data[1]) << 8);
+
+    return (int16_t)value;
+}
+
+esp_err_t can_start_summary_task(void) {
+    if (!can_driver_started) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    if (can_summary_task_handle != NULL) {
+        return ESP_OK;
+    }
+
+    BaseType_t task_ret = xTaskCreate(can_console_summary_task, "can_console_summary", 3072, NULL, 2, &can_summary_task_handle );
+
+    if (task_ret != pdPASS) {
+        can_summary_task_handle = NULL;
+        ESP_LOGE(TAG, "Failed to create CAN summary task...");
+        return ESP_ERR_NO_MEM;
+    }
+
+    ESP_LOGI(TAG, "CAN summary task started...");
+    return ESP_OK;
+}
+
+esp_err_t can_stop_summary_task(void)
+{
+    if (can_summary_task_handle != NULL) {
+        vTaskDelete(can_summary_task_handle);
+        can_summary_task_handle = NULL;
+        ESP_LOGI(TAG, "CAN summary task stopped");
+    }
+
+    return ESP_OK;
+}
+
+static void process_imu_accel_frame(const twai_message_t *message)
+{
+    if (message == NULL || message->data_length_code < 8) {
+        return;
+    }
+
+    int16_t ax_mg = get_i16_le(&message->data[0]);
+    int16_t ay_mg = get_i16_le(&message->data[2]);
+    int16_t az_mg = get_i16_le(&message->data[4]);
+
+    taskENTER_CRITICAL(&accumulator_mux);
+
+    imu_accel_accumulator.ax_sum_mg += ax_mg;
+    imu_accel_accumulator.ay_sum_mg += ay_mg;
+    imu_accel_accumulator.az_sum_mg += az_mg;
+    imu_accel_accumulator.sample_count++;
+
+    imu_accel_accumulator.latest_sample_counter = message->data[6];
+    imu_accel_accumulator.latest_status_flags = message->data[7];
+
+    taskEXIT_CRITICAL(&accumulator_mux);
+}
 
 static void can_message_to_log_record(const twai_message_t *message,
                                       can_log_record_t *record)
@@ -83,25 +166,71 @@ static void can_rx_task(void *arg)
     twai_message_t message;
     can_log_record_t record;
 
-    while (1) {
-        esp_err_t ret = twai_receive(&message, pdMS_TO_TICKS(1000));
+    while (true) {
+        esp_err_t ret = twai_receive(
+            &message,
+            pdMS_TO_TICKS(1000)
+        );
 
         if (ret == ESP_OK) {
+            if (!message.extd &&
+                message.identifier == CAN_ID_IMU_ACCEL &&
+                !message.rtr) {
+                process_imu_accel_frame(&message);
+                }
+
             can_message_to_log_record(&message, &record);
 
             if (can_log_queue != NULL) {
-                if (xQueueSend(can_log_queue, &record, 0) != pdTRUE) {
-                    ESP_LOGW(TAG, "CAN log queue full, dropping frame");
-                }
+                if (xQueueSend(
+                        can_log_queue,
+                        &record,
+                        0
+                    ) != pdTRUE) {
+                    ESP_LOGW(
+                        TAG,
+                        "CAN log queue full, dropping frame"
+                    );
+                    }
             }
-
-            can_print_log_record(&record);
         } else if (ret == ESP_ERR_TIMEOUT) {
-            // Normal. No CAN frame received during this timeout.
+            // Normal: no frame arrived during the timeout.
         } else {
-            ESP_LOGE(TAG, "twai_receive failed: %s", esp_err_to_name(ret));
+            ESP_LOGE(
+                TAG,
+                "twai_receive failed: %s",
+                esp_err_to_name(ret)
+            );
+
             vTaskDelay(pdMS_TO_TICKS(100));
         }
+    }
+}
+
+static void can_console_summary_task(void *arg) {
+    TickType_t last_wake_time = xTaskGetTickCount();
+
+    while (true) {
+        vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(1000));
+
+        imu_accel_accumulator_t snapshot;
+
+        taskENTER_CRITICAL(&accumulator_mux);
+        snapshot = imu_accel_accumulator;
+        memset(&imu_accel_accumulator, 0, sizeof(imu_accel_accumulator));
+        taskEXIT_CRITICAL(&accumulator_mux);
+
+        if (snapshot.sample_count == 0) {
+            printf("IMU Accel: No Samples\n");
+            continue;
+        }
+
+        float average_ax = (float)snapshot.ax_sum_mg / (float)snapshot.sample_count;
+        float average_ay = (float)snapshot.ay_sum_mg / (float)snapshot.sample_count;
+        float average_az = (float)snapshot.az_sum_mg / (float)snapshot.sample_count;
+
+        printf("IMU Accel AVG: X=%.1f mg, Y=%.1f mg, Z=%.1f mg | samples = %" PRIu32 " | status = 0x%02X\n",
+               average_ax, average_ay, average_az, snapshot.sample_count, snapshot.latest_status_flags);
     }
 }
 
@@ -290,7 +419,9 @@ esp_err_t can_stop(void)
         return ESP_OK;
     }
 
+    can_stop_summary_task();
     can_stop_rx_task();
+
 
     esp_err_t ret = twai_stop();
     if (ret != ESP_OK) {

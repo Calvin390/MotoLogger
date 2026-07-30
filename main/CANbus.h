@@ -24,8 +24,10 @@ esp_err_t can_init(void);
 esp_err_t can_stop(void);
 bool is_can_started(void);
 
+esp_err_t can_start_summary_task(void);
 esp_err_t can_start_rx_task(void);
 esp_err_t can_stop_rx_task(void);
+esp_err_t can_stop_summary_task(void);
 
 esp_err_t can_receive_log_record(can_log_record_t *record, TickType_t timeout);
 

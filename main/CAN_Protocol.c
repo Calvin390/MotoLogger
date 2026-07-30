@@ -7,7 +7,7 @@
 #include "freertos/task.h"
 
 #include "CANbus.h"
-#include "can_protocol.h"
+#include "CAN__Protocol.h"
 
 static void put_u16_le(uint8_t *buf, uint16_t value) {
     buf[0] = (uint8_t)(value & 0xFF);

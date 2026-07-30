@@ -9,6 +9,7 @@
 #include "esp_system.h"
 #include "esp_timer.h"
 #include "esp_log.h"
+#include "esp_chip_info.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

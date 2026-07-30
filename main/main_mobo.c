@@ -21,6 +21,7 @@ void app_main(void)
 
     ESP_ERROR_CHECK(can_init());
     ESP_ERROR_CHECK(can_start_rx_task());
+    ESP_ERROR_CHECK(can_start_summary_task());
 
     esp_err_t ret = console_start();
     if (ret != ESP_OK) {
