@@ -25,17 +25,13 @@ The long-term goal is to build a modular logging and display system that can sup
 
 ## Current Status
 
-**Status: PCB Assembly (In Progress) | Firmware in bring up/validation**
+**Status: PCB Bring-up and Firmware Flashing 
 
-The prototype mainboard PCB has been ordered and received from PCBWay and is currently being hand-assembled (mostly 1206 SMD components). 
-Firmware development is largely complete and is being validated against the hardware as assembly progresses.
+The prototype board has been assembled and is ready to be flashed using backup UART via ESP32 pins instead of USB-C due to anchoring issues with the receptacle. The ESP32 has been confirmed alive by both oscilloscope readings and reading TX data through TeraTerm coming from the ESP32.
 
 Current focus:
+Flashing firmware via UART to the ESP32 and confirming proper idle CAN traffic through an oscilloscope.
 
-- Hand-assembling the prototype mainboard (SMD/THT soldering, ESP32-S3-WROOM module mounting)
-- Bringing up power stage: Noisy 12V automotive input → 5V → 3.3V regulation, with fuse/TVS/Schottky protection
-- Validating CAN transceiver integration and SPI microSD logging against assembled hardware
-- Bench validation prior to future daughterboard module expansion
 
 Hardware is in its first prototype revision and may change in future spins based on bring-up results.
 ---
