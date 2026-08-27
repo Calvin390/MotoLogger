@@ -32,7 +32,7 @@ The prototype board has been assembled and is ready to be flashed using backup U
 Current focus:
 Flashing firmware via UART to the ESP32 and confirming proper idle CAN traffic through an oscilloscope.
 
-![Rev A board with UART Pins soldered to bypass USB](projectImages/IMG_2573.jpg)
+![Rev A board with UART Pins soldered to bypass USB](projectImages/IMG_2573.jpeg)
 
 Hardware is in its first prototype revision and may change in future spins based on bring-up results.
 ---
